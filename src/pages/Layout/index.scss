@@ -1,0 +1,26 @@
+.logo {
+  width: 180px;
+  height: 60px;
+  background: url('~@/assets/eletronic.svg') no-repeat center / 40px auto;
+}
+
+.user-info {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding-right: 20px;
+  color: black;
+
+  .user-icon {
+    margin-right: 10px;
+  }
+
+  .user-name {
+    margin-right: 20px;
+  }
+
+  .user-logout {
+    display: inline-block;
+    cursor: pointer;
+  }
+}
