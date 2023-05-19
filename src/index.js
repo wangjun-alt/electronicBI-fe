@@ -7,9 +7,9 @@ import 'antd/dist/antd.min.js'
 import './index.scss'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  //<React.StrictMode>
+  //</React.StrictMode>,
+  <App />,
   document.getElementById('root')
 )
 

@@ -14,14 +14,17 @@ function Login () {
   const onFinish = async values => {
     console.log('Success:', values)
     try {
-      // await loginStore.getToken({
-      //   username: values.username,
-      //   password: values.password
-      // })
+      await loginStore.getToken({
+        username: values.username,
+        password: values.password
+      })
+      if (loginStore.data.code === 400) {
+        throw new Error()
+      }
       navigate('/', { replace: true })
       message.success('登录成功')
     } catch (e) {
-      message.error('用户名或密码错误')
+      message.error(loginStore.data.errmsg)
     }
   }
   const onFinishFailed = (errorInfo) => {
