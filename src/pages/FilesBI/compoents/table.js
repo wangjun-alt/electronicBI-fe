@@ -9,9 +9,20 @@ const scroll = {}
 function TableFilter (tableProps) {
   const columns_header = [...tableProps.dimension_v, ...tableProps.index_v]
   const table_name = tableProps.data_name
+  const avagelist = tableProps.avagelist
+  const maxlist = tableProps.maxlist
+  const minlist = tableProps.minlist
+  const sumlist = tableProps.sumlist
   const { columnsStore } = useStore()
   useEffect(() => {
-    columnsStore.setColumns({ header: columns_header, table_name: table_name })
+    columnsStore.setColumns({
+      header: columns_header,
+      table_name: table_name,
+      avagelist: avagelist,
+      maxlist: maxlist,
+      minlist: minlist,
+      sumlist: sumlist
+    })
   }, [tableProps])
   const columns = toJS(columnsStore.columns) ?? []
   const data = toJS(columnsStore.table_data) ?? []

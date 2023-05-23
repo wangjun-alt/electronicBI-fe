@@ -19,15 +19,26 @@ function LineFilter (lineProps) {
   const index_list = lineProps.index_v
   const table_name = lineProps.data_name
   const smoothstatus = lineProps.smoothstatus
-  const gapstatus = lineProps.gapstatus
   const [bar, setBar] = useState([])
+  const avagelist = lineProps.avagelist
+  const maxlist = lineProps.maxlist
+  const minlist = lineProps.minlist
+  const sumlist = lineProps.sumlist
   useEffect(() => {
     const setLinedata = async () => {
       let series_data = []
       let bardim_li = []
       let option = {}
       try {
-        const res = await http.post('/dataset/bar/', { bardim: bardim, index_list: index_list, table_name: table_name })
+        const res = await http.post('/dataset/bar/', {
+          bardim: bardim,
+          index_list: index_list,
+          table_name: table_name,
+          avagelist: avagelist,
+          maxlist: maxlist,
+          minlist: minlist,
+          sumlist: sumlist
+        })
         setBar(res.data)
         bardim_li = res.data.bardim_list
         const bar_data = res.data.bar_data
@@ -76,7 +87,7 @@ function LineFilter (lineProps) {
           },
           xAxis: {
             type: 'category',
-            boundaryGap: gapstatus,
+            boundaryGap: true,
             data: bardim_li
           },
           yAxis: {

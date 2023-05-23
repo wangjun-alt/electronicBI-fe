@@ -21,6 +21,10 @@ function BarFilter (barProps) {
   const index_list = barProps.index_v
   const table_name = barProps.data_name
   const [bar, setBar] = useState([])
+  const avagelist = barProps.avagelist
+  const maxlist = barProps.maxlist
+  const minlist = barProps.minlist
+  const sumlist = barProps.sumlist
   useEffect(() => {
     console.log(barProps)
     let series_data = []
@@ -28,7 +32,15 @@ function BarFilter (barProps) {
     let option = {}
     const setBardata = async () => {
       try {
-        const res = await http.post('/dataset/bar/', { bardim: bardim, index_list: index_list, table_name: table_name })
+        const res = await http.post('/dataset/bar/', {
+          bardim: bardim,
+          index_list: index_list,
+          table_name: table_name,
+          avagelist: avagelist,
+          maxlist: maxlist,
+          minlist: minlist,
+          sumlist: sumlist
+        })
         setBar(res.data)
         bardim_li = res.data.bardim_list
         const bar_data = res.data.bar_data

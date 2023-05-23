@@ -1,8 +1,8 @@
 import { Col, Row } from 'antd'
 import { IllustrationConstruction, IllustrationConstructionDark, IllustrationNoContent, IllustrationIdleDark, IllustrationIdle, IllustrationNoContentDark, IllustrationFailureDark, IllustrationFailure } from '@douyinfe/semi-illustrations'
-import { Typography, Table, Select, Tag, Switch } from 'antd'
+import { Typography, Table, Select, Switch, Button, Dropdown, message, Tag } from 'antd'
 import { Outlet, Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowLeftOutlined } from '@ant-design/icons'
+import { ArrowLeftOutlined, DownOutlined, UserOutlined } from '@ant-design/icons'
 import { Input, Space, Form, Tabs, TabPane, RadioGroup, Radio, Empty } from '@douyinfe/semi-ui'
 import { IconSearch, IconBarChartVStroked, IconPieChart2Stroked, IconTestScoreStroked, IconLineChartStroked } from '@douyinfe/semi-icons'
 import { useState, useEffect, useCallback } from 'react'
@@ -12,18 +12,23 @@ import BarFilter from './compoents/bar'
 import LineFilter from './compoents/line'
 import PieFilter from './compoents/pie'
 
+
+
 const tagRender_ind = (props) => {
-  const { label, closable, onClose } = props
+  const { label, closable, onClose, value } = props
   const onPreventMouseDown = (event) => {
     event.preventDefault()
     event.stopPropagation()
   }
   return (
     <Tag
+      bordered={false}
       color='cyan'
       onMouseDown={onPreventMouseDown}
       closable={closable}
       onClose={onClose}
+      size="large"
+      shape='circle'
       style={{
         marginRight: 3,
       }}
@@ -35,17 +40,20 @@ const tagRender_ind = (props) => {
 }
 
 const tagRender_dim = (props) => {
-  const { label, closable, onClose } = props
+  const { label, closable, onClose, value } = props
   const onPreventMouseDown = (event) => {
     event.preventDefault()
     event.stopPropagation()
   }
   return (
     <Tag
-      color='pink'
+      bordered={true}
+      color="blue"
       onMouseDown={onPreventMouseDown}
       closable={closable}
       onClose={onClose}
+      size="large"
+      shape='circle'
       style={{
         marginRight: 3,
       }}
@@ -70,7 +78,11 @@ function FilesBI () {
   const [size, setSize] = useState('middle')
   const [dimension_v, setDimension_V] = useState([])
   const [index_v, setIndex_V] = useState([])
-  const [cloumnlist, setCloumnlist] = useState()
+  const [avagelist, setAvagelist] = useState([])
+  const [maxlist, setMaxlist] = useState([])
+  const [minlist, setMinlist] = useState([])
+  const [sumlist, setSumlist] = useState([])
+
   useEffect(() => {
     setStatus('0')
     const loadColumnList = async () => {
@@ -106,7 +118,6 @@ function FilesBI () {
     setLengendStatus(lengendstatus)
   }
 
-
   const tableProps = {
     bordered,
     loading,
@@ -114,7 +125,11 @@ function FilesBI () {
     showHeader,
     dimension_v,
     index_v,
-    data_name
+    data_name,
+    avagelist,
+    maxlist,
+    minlist,
+    sumlist
   }
   const barProps = {
     bardim,
@@ -123,26 +138,29 @@ function FilesBI () {
     toolstatus,
     data_name,
     dimension_v,
-    lengendstatus
+    lengendstatus,
+    avagelist,
+    maxlist,
+    minlist,
+    sumlist
   }
 
-  const [gapstatus, setGapstatus] = useState(false)
-  const handleGapChange = (gapstatus) => {
-    setGapstatus(gapstatus)
-  }
   const [smoothstatus, setSmoothstatus] = useState(false)
   const handleSmoothChange = (smoothstatus) => {
     setSmoothstatus(smoothstatus)
   }
   const lineProps = {
     smoothstatus,
-    gapstatus,
     toolstatus,
     bardim,
     index_v,
     data_name,
     dimension_v,
-    lengendstatus
+    lengendstatus,
+    avagelist,
+    maxlist,
+    minlist,
+    sumlist
   }
 
   const pieProps = {
@@ -151,7 +169,11 @@ function FilesBI () {
     index_v,
     data_name,
     dimension_v,
-    lengendstatus
+    lengendstatus,
+    avagelist,
+    maxlist,
+    minlist,
+    sumlist
   }
 
   const dim_list = []
@@ -163,6 +185,16 @@ function FilesBI () {
       }
     )
   }
+  const data_list = []
+  for (let i = 0; i < index_v.length; i++) {
+    data_list.push(
+      {
+        value: index_v[i],
+        label: index_v[i],
+      }
+    )
+  }
+
   return <div>
     <Row>
       <Col>
@@ -237,7 +269,7 @@ function FilesBI () {
             >指标</Typography.Title>
             <div style={{
               padding: 10,
-              height: 200,
+              height: 245,
               overflowX: 'hidden',
               overflowY: 'auto'
             }}>
@@ -252,175 +284,261 @@ function FilesBI () {
         </Row>
       </Col>
       <Col>
-        <div
-          style={{
-            padding: 24,
-            minHeight: 850,
-            marginLeft: 20,
-            width: 350,
-            background: 'rgb(255, 255, 255)'
-          }}>
-          <Section text={'图表'} style={{ textAlign: 'center' }}></Section>
-          <Tabs defaultActiveKey='1' onChange={(activeKey) => { setStatus(activeKey) }}>
-            <TabPane
-              tab={
-                <span>
-                  <IconTestScoreStroked style={{ fontSize: '20px', marginLeft: 10 }} />
-                </span>
-              }
-              itemKey="1"
-            >
-              <Typography.Title
-                level={5}
-                style={{
-                  margin: 10
-                }}
-              >客制化表格
-              </Typography.Title>
-              <Space vertical spacing={3} align='start'>
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否展示外边框和表格边框</Text>
-                <Switch checked={bordered} onChange={handleBorderChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否显示表头</Text>
-                <Switch checked={showHeader} onChange={handleHeaderChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>表格尺寸</Text>
-                <RadioGroup type='button' buttonSize='middle' value={size} onChange={handleSizeChange} style={{ margin: 10, marginTop: 0 }}>
-                  <Radio value={'large'}>大</Radio>
-                  <Radio value={'middle'}>默认</Radio>
-                  <Radio value={'small'}>小</Radio>
-                </RadioGroup>
-              </Space>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <IconBarChartVStroked style={{ fontSize: '20px', marginLeft: 10 }} />
-                </span>
-              }
-              itemKey="2"
-            >
-              <Typography.Title
-                level={5}
-                style={{
-                  margin: 10
-                }}
-              >客制化柱状图
-              </Typography.Title>
-              <Space vertical spacing={3} align='start'>
-                <Text style={{ margin: 10, marginBottom: 0 }}>横轴字段</Text>
+        <Row>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 510,
+              marginLeft: 20,
+              width: 350,
+              background: 'rgb(255, 255, 255)'
+            }}>
+            <Section text={'图表'} style={{ textAlign: 'center' }}></Section>
+            <Tabs defaultActiveKey='1' onChange={(activeKey) => { setStatus(activeKey) }}>
+              <TabPane
+                tab={
+                  <span>
+                    <IconTestScoreStroked style={{ fontSize: '20px', marginLeft: 10 }} />
+                  </span>
+                }
+                itemKey="1"
+              >
+                <Typography.Title
+                  level={5}
+                  style={{
+                    margin: 10
+                  }}
+                >客制化表格
+                </Typography.Title>
+                <Space vertical spacing={3} align='start'>
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否展示外边框和表格边框</Text>
+                  <Switch checked={bordered} onChange={handleBorderChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否显示表头</Text>
+                  <Switch checked={showHeader} onChange={handleHeaderChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>表格尺寸</Text>
+                  <RadioGroup type='button' buttonSize='middle' value={size} onChange={handleSizeChange} style={{ margin: 10, marginTop: 0 }}>
+                    <Radio value={'large'}>大</Radio>
+                    <Radio value={'middle'}>默认</Radio>
+                    <Radio value={'small'}>小</Radio>
+                  </RadioGroup>
+                </Space>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <IconBarChartVStroked style={{ fontSize: '20px', marginLeft: 10 }} />
+                  </span>
+                }
+                itemKey="2"
+              >
+                <Typography.Title
+                  level={5}
+                  style={{
+                    margin: 10
+                  }}
+                >客制化柱状图
+                </Typography.Title>
+                <Space vertical spacing={3} align='start'>
+                  <Text style={{ margin: 10, marginBottom: 0 }}>横轴字段</Text>
+                  <Select
+                    showSearch
+                    placeholder="Select a person"
+                    optionFilterProp="children"
+                    value={bardim}
+                    onChange={(value) => {
+                      console.log(value)
+                      setBarDim(value)
+                    }}
+                    //defaultValue={dim_list[0]}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    style={{
+                      margin: 10,
+                      marginTop: 0,
+                      width: 270
+                    }}
+                    options={dim_list}
+                  />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
+                  <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否显示指标信息 </Text>
+                  <Switch checked={barstatus} onChange={handleBarChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
+                  <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0 }} />
+                </Space>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <IconLineChartStroked style={{ fontSize: '20px', marginLeft: 10 }} />
+                  </span>
+                }
+                itemKey="3"
+              >
+                <Typography.Title
+                  level={5}
+                  style={{
+                    margin: 10
+                  }}
+                >客制化线性图
+                </Typography.Title>
+                <Space vertical spacing={3} align='start'>
+                  <Text style={{ margin: 10, marginBottom: 0 }}>横轴字段</Text>
+                  <Select
+                    showSearch
+                    placeholder="Select a person"
+                    optionFilterProp="children"
+                    value={bardim}
+                    onChange={(value) => { setBarDim(value) }}
+                    defaultValue={dim_list[0]}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    style={{
+                      margin: 10,
+                      marginTop: 0,
+                      width: 270
+                    }}
+                    options={dim_list}
+                  />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
+                  <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否线性平滑 </Text>
+                  <Switch checked={smoothstatus} onChange={handleSmoothChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
+                  <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0, marginBottom: 0 }} />
+                </Space>
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <IconPieChart2Stroked style={{ fontSize: '20px', marginLeft: 10 }} />
+                  </span>
+                }
+                itemKey="4"
+              >
+                <Typography.Title
+                  level={5}
+                  style={{
+                    margin: 10
+                  }}
+                >客制化饼图
+                </Typography.Title>
+                <Space vertical spacing={3} align='start'>
+                  <Text style={{ margin: 10, marginBottom: 0 }}>维度选择</Text>
+                  <Select
+                    showSearch
+                    placeholder="Select a person"
+                    optionFilterProp="children"
+                    value={bardim}
+                    onChange={(value) => { setBarDim(value) }}
+                    defaultValue={dim_list[0]}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                    style={{
+                      margin: 10,
+                      marginTop: 0,
+                      width: 270
+                    }}
+                    options={dim_list}
+                  />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
+                  <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
+                  <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
+                  <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0 }} />
+                </Space>
+              </TabPane>
+            </Tabs>
+          </div>
+        </Row>
+        <Row>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 335,
+              marginTop: 20,
+              marginLeft: 20,
+              width: 350,
+              background: 'rgb(255, 255, 255)'
+            }}>
+            <Typography.Title
+              level={5}
+              style={{
+                margin: 10
+              }}
+            >数据分析
+            </Typography.Title>
+            <div style={{
+              padding: 10,
+              height: 245,
+              overflowX: 'hidden',
+              overflowY: 'auto',
+              width: 300,
+              background: 'rgb(255, 255, 255)'
+            }}>
+              <Space vertical>
+                <Text style={{ margin: 10, marginBottom: 0 }}>平均</Text>
                 <Select
                   showSearch
+                  mode="multiple"
                   placeholder="Select a person"
                   optionFilterProp="children"
-                  value={bardim}
-                  onChange={(value) => {
-                    console.log(value)
-                    setBarDim(value)
-                  }}
-                  //defaultValue={dim_list[0]}
+                  value={avagelist}
+                  onChange={(value) => { setAvagelist(value) }}
+                  style={{ width: 257, marginLeft: 10 }}
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  style={{
-                    margin: 10,
-                    marginTop: 0,
-                    width: 270
-                  }}
-                  options={dim_list}
+                  options={data_list}
                 />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
-                <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否显示指标信息 </Text>
-                <Switch checked={barstatus} onChange={handleBarChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
-                <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0 }} />
-              </Space>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <IconLineChartStroked style={{ fontSize: '20px', marginLeft: 10 }} />
-                </span>
-              }
-              itemKey="3"
-            >
-              <Typography.Title
-                level={5}
-                style={{
-                  margin: 10
-                }}
-              >客制化线性图
-              </Typography.Title>
-              <Space vertical spacing={3} align='start'>
-                <Text style={{ margin: 10, marginBottom: 0 }}>横轴字段</Text>
+                <Text style={{ margin: 10, marginBottom: 0 }}>方差</Text>
                 <Select
                   showSearch
+                  mode="multiple"
                   placeholder="Select a person"
                   optionFilterProp="children"
-                  value={bardim}
-                  onChange={(value) => { setBarDim(value) }}
-                  defaultValue={dim_list[0]}
+                  value={maxlist}
+                  onChange={(value) => { setMaxlist(value) }}
+                  style={{ width: 257, marginLeft: 10 }}
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  style={{
-                    margin: 10,
-                    marginTop: 0,
-                    width: 270
-                  }}
-                  options={dim_list}
+                  options={data_list}
                 />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
-                <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否开启边界间隙 </Text>
-                <Switch checked={gapstatus} onChange={handleGapChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否线性平滑 </Text>
-                <Switch checked={smoothstatus} onChange={handleSmoothChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
-                <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0 }} />
-              </Space>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <IconPieChart2Stroked style={{ fontSize: '20px', marginLeft: 10 }} />
-                </span>
-              }
-              itemKey="4"
-            >
-              <Typography.Title
-                level={5}
-                style={{
-                  margin: 10
-                }}
-              >客制化饼图
-              </Typography.Title>
-              <Space vertical spacing={3} align='start'>
-                <Text style={{ margin: 10, marginBottom: 0 }}>维度选择</Text>
+                <Text style={{ margin: 10, marginBottom: 0 }}>标准差</Text>
                 <Select
                   showSearch
+                  mode="multiple"
                   placeholder="Select a person"
                   optionFilterProp="children"
-                  value={bardim}
-                  onChange={(value) => { setBarDim(value) }}
-                  defaultValue={dim_list[0]}
+                  value={minlist}
+                  onChange={(value) => { setMinlist(value) }}
+                  style={{ width: 257, marginLeft: 10 }}
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  style={{
-                    margin: 10,
-                    marginTop: 0,
-                    width: 270
-                  }}
-                  options={dim_list}
+                  options={data_list}
                 />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否开启工具栏 </Text>
-                <Switch checked={toolstatus} onChange={handleToolChange} style={{ margin: 10, marginTop: 0 }} />
-                <Text style={{ margin: 10, marginBottom: 0 }}>是否显示图例 </Text>
-                <Switch checked={lengendstatus} onChange={handleLegendChange} style={{ margin: 10, marginTop: 0 }} />
+                <Text style={{ margin: 10, marginBottom: 0 }}>求和</Text>
+                <Select
+                  showSearch
+                  mode="multiple"
+                  placeholder="Select a person"
+                  optionFilterProp="children"
+                  value={sumlist}
+                  onChange={(value) => { setSumlist(value) }}
+                  style={{ width: 257, marginLeft: 10 }}
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={data_list}
+                />
               </Space>
-            </TabPane>
-          </Tabs>
-        </div>
+            </div>
+          </div>
+        </Row>
       </Col>
       <Col>
         <Space vertical spacing={3}>
@@ -438,7 +556,7 @@ function FilesBI () {
                 style={{
                   margin: 0,
                 }}
-              >维度<Select
+              >维度:<Select
                   mode="multiple"
                   showArrow
                   tagRender={tagRender_dim}
@@ -473,7 +591,7 @@ function FilesBI () {
                 style={{
                   margin: 0,
                 }}
-              >指标
+              >指标:
                 <Select
                   mode="multiple"
                   showArrow
@@ -486,6 +604,8 @@ function FilesBI () {
                   value={index_v}
                   onChange={(value) => {
                     setIndex_V(value)
+                  }}
+                  onDeselect={() => {
                   }}
                   options={indexList}
                 /></Typography.Title>
@@ -559,8 +679,8 @@ function FilesBI () {
           </Row>
         </Space>
       </Col>
-    </Row>
-  </div>
+    </Row >
+  </div >
 }
 
 export default FilesBI

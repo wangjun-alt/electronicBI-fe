@@ -9,8 +9,7 @@ import { Outlet, Link, useNavigate } from 'react-router-dom'
 const { Dragger } = Upload
 const props = {
   name: 'file',
-  multiple: true,
-  accept: ".pdf, .docx",
+  accept: ".png, .jpg",
   action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
   onChange (info) {
     const { status } = info.file
@@ -67,7 +66,7 @@ function FilesUpload () {
       </p>
       <p className="ant-upload-text">Click or drag file to this area to upload</p>
       <p className="ant-upload-hint">
-        目前仅支持docx和pdf格式文件
+        目前仅支持png和jpg格式文件
       </p>
     </Dragger>
   </div>

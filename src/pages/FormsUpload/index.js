@@ -1,18 +1,36 @@
 import React, { useState } from 'react'
-import { Typography, Form, Table, Button } from 'antd'
+import { Typography, Form, Table, Button, message } from 'antd'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { DatePicker, Input, Space } from '@douyinfe/semi-ui'
 import { Cascader, InputNumber, Toast, Row, Col, TextArea, Modal } from '@douyinfe/semi-ui'
 import options from '@/utils/cities'
 import { ArrowLeftOutlined } from '@ant-design/icons'
+import { http } from '@/utils'
 
 function FormsUpload () {
+  const navigate = useNavigate()
   const [formdata, setFormDate] = useState()
   const onFinish = (values) => {
-    console.log('Success:', values)
-    showDialog()
     setFormDate(values)
+    getContractNum(values)
   }
+  const getContractNum = async (values) => {
+    // try {
+    console.log(formdata.contract_id)
+    const res = await http.post('/contract/nums/', { contract_id: values.contract_id })
+    console.log(res.data)
+    if (res.data.code === 400) {
+      message.error(res.data.errmsg)
+    }
+    if (res.data.code === 200) {
+      showDialog()
+    }
+    //}
+    // catch (e) {
+    //   message.error('未知错误')
+    // }
+  }
+
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo)
   }
@@ -23,34 +41,55 @@ function FormsUpload () {
   }
   const [saleLoc, setSaleLoc] = useState()
   const [buyLoc, setBuyLoc] = useState()
+  const [messagedata, setMessageData] = useState()
   const handleOk = () => {
     setVisible(false)
-    console.log(formdata)
-    console.log(saleLoc, buyLoc)
-    console.log(formdata.contract_date.toLocaleDateString())
-    // const setContractData = async (formdata) => {
-    //   try {
-    //     const res = await http.post('/contract/form-upload/', {
-    //       contract_id: formdata.contract_id,
-    //       contract_name: formdata.contract_name,
-    //       part_a: formdata.part_a,
-    //       part_b: formdata.part_b,
-    //       part_c: formdata.part_c,
-    //       contract_date: formdata.contract_date.toLocaleDateString(),
-    //       effective_time: formdata.active_date[0].toLocaleDateString(),
-    //       expiration_time: formdata.active_date[1].toLocaleDateString(),
-    //       saleing_loaction: formdata.sale_loc,
-    //       purchasing_loaction: formdata.buy_loc,
-    //       total_transaction_power: formdata.ele_total,
-    //       sale_price: formdata.sale - price,
-    //       delivery_year: formdata.year_ele,
-
-    //     })
-    //   }
-    //   catch (e) { }
-    // }
-    // setContractData(formdata)
-
+    const purchase_loc = formdata.buy_loc
+    const purchasing_loaction = purchase_loc.join("/") + '/' + buyLoc
+    const sale_loc = formdata.sale_loc
+    const saleing_loaction = sale_loc.join("/") + '/' + saleLoc
+    const setContractData = async () => {
+      try {
+        const res = await http.post('/contract/form-upload/', {
+          contract_id: formdata.contract_id,
+          contract_name: formdata.contract_name,
+          part_a: formdata.part_a,
+          part_b: formdata.part_b,
+          part_c: formdata.part_c,
+          contract_date: formdata.contract_date.toLocaleDateString(),
+          effective_time: formdata.active_date[0].toLocaleDateString(),
+          expiration_time: formdata.active_date[1].toLocaleDateString(),
+          saleing_loaction: saleing_loaction,
+          purchasing_loaction: purchasing_loaction,
+          total_transaction_power: formdata.ele_total,
+          sale_price: formdata.sale_price,
+          delivery_year: formdata.year_ele,
+          delivery_1_month: formdata.January,
+          delivery_2_month: formdata.February,
+          delivery_3_month: formdata.March,
+          delivery_4_month: formdata.April,
+          delivery_5_month: formdata.May,
+          delivery_6_month: formdata.June,
+          delivery_7_month: formdata.July,
+          delivery_8_month: formdata.August,
+          delivery_9_month: formdata.September,
+          delivery_10_month: formdata.October,
+          delivery_11_month: formdata.November,
+          delivery_12_month: formdata.December
+        })
+        console.log(res.data)
+        setMessageData(res.data)
+        if (res.data.code === 400) {
+          throw new Error()
+        }
+        navigate(`/`, { replace: true })
+        message.success(res.data.errmsg)
+      }
+      catch (e) {
+        message.error(messagedata.errmsg)
+      }
+    }
+    setContractData()
   }
   const handleCancel = () => {
     setVisible(false)
@@ -257,7 +296,7 @@ function FormsUpload () {
         </Form.Item>
         <Form.Item
           label="售电价格"
-          name="sale-price"
+          name="sale_price"
           rules={[
             {
               required: true,
