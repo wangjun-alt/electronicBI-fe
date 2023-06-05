@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import 'lib-flexible'
 import App from './App'
 // 导入antd样式文件
 import 'antd/dist/antd.min.js'
@@ -7,8 +8,6 @@ import 'antd/dist/antd.min.js'
 import './index.scss'
 
 ReactDOM.render(
-  //<React.StrictMode>
-  //</React.StrictMode>,
   <App />,
   document.getElementById('root')
 )

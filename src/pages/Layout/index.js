@@ -29,7 +29,6 @@ const items = [
 const Loyout = () => {
   const [collapsed, setCollapsed] = useState(false)
   const { userStore, loginStore } = useStore()
-  const [datasetnum, setDataSetNum] = useState()
   useEffect(() => {
     try {
       userStore.getUserInfo()
@@ -47,21 +46,19 @@ const Loyout = () => {
     loginStore.loginOut()
     navigate('/login')
   }
-  let linknum = '/'
   const getDataSetNum = async () => {
     try {
       const res = await http.get('/dataset/getnum/')
       const nums = Number(res.data.dataset_num)
       if (nums < 5) {
-        setDataSetNum('/data/add/')
+        navigate('/data/add/')
       } else {
         message.error('数据集仓库已满5个，请清理后再添加')
-        setDataSetNum("/")
+        navigate("/")
       }
     }
     catch (e) { }
   }
-  console.log(datasetnum)
   return (
     <Layout
       style={{
@@ -78,7 +75,7 @@ const Loyout = () => {
         }}>
         <div className="logo" />
         <div onClick={getDataSetNum} style={{ height: 40, borderRadius: 30, fontSize: 17, textAlign: 'center', lineHeight: 2.5, margin: 16, background: 'rgba(var(--semi-grey-2), 1)' }} >
-          <Link to={{ pathname: datasetnum }} style={{ color: 'black' }}><PlusCircleFilled style={{ fontSize: '20px', margin: 2, color: '#555' }} />添加数据集</Link>
+          <Link style={{ color: 'black' }}><PlusCircleFilled style={{ fontSize: '20px', margin: 2, color: '#555' }} />添加数据集</Link>
         </div>
         <Menu theme="light" defaultSelectedKeys={['/']} mode="inline" items={items} onClick={onClick} />
       </Sider>

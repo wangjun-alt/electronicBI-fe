@@ -81,6 +81,7 @@ function Home () {
             visible={visible}
             onOk={handleOk}
             onCancel={handleCancel}
+            maskStyle={{ opacity: 0.3 }}
             closeOnEsc={true}
           >
             <Form.Item
@@ -99,8 +100,7 @@ function Home () {
         </Card>
       )}
     </Space>
-    <Title level={3} style={{ paddingLeft: 24, paddingTop: 20 }}>实时数据概览</Title>
-  </div>
+  </div >
 }
 
 export default Home

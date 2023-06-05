@@ -9,6 +9,9 @@ import DataFilter from "./pages/DataFilter"
 import FilesBI from "./pages/FilesBI"
 import DataAdd from "./pages/DataAdd"
 import DataEdit from "./pages/DataEdit"
+import CPTN from "./pages/CPTN"
+import OCR from "./pages/OCR"
+import BERT from "./pages/BERT"
 import './index.scss'
 import { HistoryRouter, history } from './utils/history'
 
@@ -35,6 +38,9 @@ function App () {
             <Route path="/upload/files" element={<FilesUpload />}></Route>
             <Route path="/upload/forms" element={<FormsUpload />}></Route>
             <Route path="/data/bi" element={<FilesBI />}></Route>
+            <Route path="/cptn" element={<CPTN />}></Route>
+            <Route path="/ocr" element={<OCR />}></Route>
+            <Route path="/bert" element={<BERT />}></Route>
           </Route>
           <Route path="/login" element={<Login />}></Route>
         </Routes>

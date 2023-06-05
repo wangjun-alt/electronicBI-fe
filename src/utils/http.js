@@ -4,7 +4,7 @@ import { history } from './history'
 
 const http = axios.create({
   baseURL: 'http://175.27.155.91:8000/',
-  timeout: 5000
+  timeout: 10000
 })
 // 添加请求拦截器
 http.interceptors.request.use((config) => {
@@ -33,5 +33,4 @@ http.interceptors.response.use((response) => {
   }
   return Promise.reject(error)
 })
-
 export { http }
